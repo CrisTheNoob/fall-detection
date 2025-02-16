@@ -1,0 +1,8 @@
+{% extends 'detection/base.html' %}
+
+{% block title %}Home - Fall Detection{% endblock %}
+
+{% block content %}
+    <h1>Live Fall Detection</h1>
+    <img src="{% url 'video_feed' %}" width="640" height="480">
+{% endblock %}
