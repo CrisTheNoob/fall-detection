@@ -8,8 +8,31 @@ import cv2
 import numpy as np
 from django.http import StreamingHttpResponse
 
+
+SEMAPHORE_API_KEY = "YOUR_SEMAPHORE_API_KEY"
+RECIPIENT_NUMBER = "639XXXXXXXXX"  #
+
 # Load pre-trained fall detection model (Replace with an actual model)
 fall_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_fullbody.xml")
+
+fall_alert_sent = False  # To prevent spam messages
+
+def send_sms_alert():
+    global fall_alert_sent
+    if not fall_alert_sent:
+        url = "https://api.semaphore.co/api/v4/messages"
+        payload = {
+            "apikey": SEMAPHORE_API_KEY,
+            "number": RECIPIENT_NUMBER,
+            "message": "⚠️ Fall Detected! Please check immediately.",
+            "sendername": "FallAlert"
+        }
+        response = requests.post(url, data=payload)
+        if response.status_code == 200:
+            print("SMS Alert Sent!")
+            fall_alert_sent = True  # Prevent multiple alerts
+        else:
+            print("Failed to send SMS:", response.text)
 
 def detect_fall(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
